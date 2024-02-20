@@ -9,8 +9,6 @@ namespace BadCode
         public const int METER = 4;
         public const int SAMPLE_SET = 2;
         public const int VOLUME = 0;
-        public const int UNINHERITED = 1;
-        public const int INHERITED = 0;
         public const int EFFECT = 0;
 
         public BadTimingPoint (int timing, float beatLength, bool uninherited)
@@ -40,7 +38,7 @@ namespace BadCode
             return _beatLength;
         }
 
-        public string GetBadTimingPoint()
+        public string GetBadTimingPointString()
         {
             int uninherited = _uninherited ? 1 : 0;
 
