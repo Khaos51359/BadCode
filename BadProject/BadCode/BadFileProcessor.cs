@@ -19,7 +19,7 @@ namespace BadCode
                 }
                 return true;
             }
-            catch(Exception e)
+            catch
             {
                 Console.WriteLine("[BadLog] unable to write file");
                 return false;
