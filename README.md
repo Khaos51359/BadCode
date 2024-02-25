@@ -1,2 +1,2 @@
 # BadCode
-BadApple on OSU mania Long Note
+BadApple but it's OSU mania Long Note
