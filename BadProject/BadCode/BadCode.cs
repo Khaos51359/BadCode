@@ -11,25 +11,9 @@ namespace BadCode
             BadAppleFrame[] badAppleFrames = badVideo.GetBadAppleFrames(
                 BadTimingPointsFactory.FRAME_TIME);
 
-            for (int i = 0; i < BadAppleFrame.WIDTH; i++)
-            {
-                string s = string.Empty;
-
-                for (int j = 0; j < BadAppleFrame.HEIGHT; j++)
-                {
-                    if (badAppleFrames[3740].GetFrame()[j,i] == (byte)255)
-                    {
-                        s += "O";
-                    }
-                    else
-                    {
-                        s += " ";
-                    }
-                }
-                System.Console.WriteLine(s);
-            }
-
             System.Console.WriteLine("video length = " + badVideo.GetVideoLength());
+
+            PlayInConsole(badAppleFrames);
 
             List<BadTimingPoint> timings = new BadTimingPointsFactory().Build(2000, 3000);
 
@@ -41,6 +25,44 @@ namespace BadCode
             }
             BadFileProcessor fp = new BadFileProcessor();
             fp.Write(output);
+        }
+
+        private static void PlayInConsole(BadAppleFrame[] badAppleFrames)
+        {
+            for (int i = 0; i < badAppleFrames.Length; i++)
+            {
+
+                System.Console.Clear();
+
+                System.Console.WriteLine(GetFrameString(badAppleFrames[i]));
+
+                System.Console.WriteLine("render frame " + i);
+                System.Threading.Thread.Sleep(30);
+            }
+        }
+
+        private static string GetFrameString(BadAppleFrame frame)
+        {
+            string s = string.Empty;
+
+            for (int i = 0; i < BadAppleFrame.WIDTH; i++)
+            {
+
+                for (int j = 0; j < BadAppleFrame.HEIGHT; j++)
+                {
+                    if (frame.GetFrame()[j,i] == (byte)255)
+                    {
+                        s += "O";
+                    }
+                    else
+                    {
+                        s += " ";
+                    }
+                }
+                s += "\n";
+            }
+
+            return s;
         }
     }
 }
