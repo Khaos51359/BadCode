@@ -1,20 +1,24 @@
-using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace BadCode
 {
     public class BadTimingPointsFactory
     {
+        private class X
+        {
+            public int x;
+        }
         private List<BadTimingPoint> _badTimingPoints;
 
-        private int _frameTime = 100;
-        private int _deccelerateTime = 41;
-        private int _accelerateTime = 41;
+        public const int FRAME_TIME = 50;
+        private int _decelerateTimeOffset = 20;
+        private int _accelerateTimeOffset = 19;
         private int _maxLNMillisecond = 18;
         private int _maxKeys = 18;
-        private float _accelerateSpeed = 0.69f;
-        private int _deccelerateSpeed = 696969699;
-        private float _normalSpeed = 800.0f;
+        private string _accelerateSpeed = "1E-69";
+        private string _decelerateSpeed = "1E+69";
+        private string _normalSpeed = "10000";
 
         private Dictionary<int, int> _xFromPos = new Dictionary<int, int>()
         {
@@ -50,23 +54,33 @@ namespace BadCode
 
             int frameCount = GetFrameCounts(startTime, endTime);
 
-            int[] frameTimings = GetFrameTimings(frameCount, startTime);
+            int[] normalFrameTimings = GetFrameTimings(frameCount, startTime);
 
-            int[] normalFrameTimings = GetFrameTimings(frameCount, startTime, _accelerateTime);
+            int[] accelerateFrameTimings = GetFrameTimings(frameCount, startTime, _accelerateTimeOffset);
 
-            List<BadTimingPoint> badTimingPoints =
-                GetTimingPoints(frameTimings, _accelerateSpeed);
+            int[] decelerateFrameTimings = GetFrameTimings(frameCount, startTime, _decelerateTimeOffset);
+
+            List<BadTimingPoint> badDecelerateTimingPoints =
+                GetTimingPoints(decelerateFrameTimings, _decelerateSpeed);
 
             List<BadTimingPoint> badNormalTimingPoints =
                 GetTimingPoints(normalFrameTimings, _normalSpeed);
 
-            finalTimingPoints.AddRange(badTimingPoints);
-            finalTimingPoints.AddRange(badNormalTimingPoints);
+            List<BadTimingPoint> badAccelerateTimingPoints =
+                GetTimingPoints(accelerateFrameTimings, _accelerateSpeed);
 
-            return finalTimingPoints;
+            finalTimingPoints.AddRange(badDecelerateTimingPoints);
+            finalTimingPoints.AddRange(badNormalTimingPoints);
+            finalTimingPoints.AddRange(badAccelerateTimingPoints);
+
+            var sorted =
+                finalTimingPoints.
+                OrderBy(point => point.GetTiming()).ToList();
+
+            return sorted;
         }
 
-        private List<BadTimingPoint> GetTimingPoints(int[] timingPoints, float beatLength)
+        private List<BadTimingPoint> GetTimingPoints(int[] timingPoints, string beatLength)
         {
             List<BadTimingPoint> badTimingPoints = new List<BadTimingPoint>();
 
@@ -87,7 +101,7 @@ namespace BadCode
 
             for(int i = 0; i < frameCount; i++)
             {
-                frameTimings[i] = i * _frameTime + startTime;
+                frameTimings[i] = i * FRAME_TIME + startTime;
             }
 
             return frameTimings;
@@ -99,7 +113,7 @@ namespace BadCode
 
             for(int i = 0; i < frameCount; i++)
             {
-                frameTimings[i] = i * _frameTime + startTime + offset;
+                frameTimings[i] = i * FRAME_TIME + startTime + offset;
             }
 
             return frameTimings;
@@ -112,7 +126,7 @@ namespace BadCode
             while(timer <= endTime)
             {
                 frameCounter++;
-                timer += _frameTime;
+                timer += FRAME_TIME;
             }
 
             return frameCounter;
