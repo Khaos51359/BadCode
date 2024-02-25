@@ -7,25 +7,33 @@ namespace BadCode
 {
     public class BadVideo
     {
+        public bool IsOpened { get; private set;}
+
         private  VideoCapture _badVideo;
         private int _badVideoFrameCount;
         private float _badVideoFPS;
         private int _badVideoWidth;
         private int _badVideoHeight;
         private int _badVideoLength;
+
         public const float FRAME_CONVERT_PERCENTAGE_TREESHOLD = 0.3f;
 
         public BadVideo(string fileName)
         {
             VideoCapture vid = new VideoCapture(fileName);
 
-            if(!vid.IsOpened())
+            if(vid == null || !vid.IsOpened())
             {
+                string slash =(Directory.GetCurrentDirectory().Contains("/")) ? "/":"\\";
+
                 Console.WriteLine("[BadLog] cannot open " +
-                        Directory.GetCurrentDirectory() + fileName
+                        Directory.GetCurrentDirectory() +
+                        slash + fileName
                         );
+                IsOpened = false;
                 return;
             }
+            IsOpened = true;
 
             _badVideo = vid;
             _badVideoFrameCount = (int)vid.Get(VideoCaptureProperties.FrameCount);
@@ -68,7 +76,6 @@ namespace BadCode
 
             for (int i = 0; i < badAppleFrames.Length; i++)
             {
-
                 int nearestOriginalFrame = GetNearestFrame(i, frameTime, 1000 / _badVideoFPS);
                 badAppleFrames[i] = ConvertRawFrame(mat[nearestOriginalFrame]);
             }
@@ -156,6 +163,7 @@ namespace BadCode
 
         private int GetBadFrameCount(int frameTime)
         {
+            Console.WriteLine("_bad video length is " + _badVideoLength);
             return _badVideoLength * 1000 / frameTime;
         }
 
