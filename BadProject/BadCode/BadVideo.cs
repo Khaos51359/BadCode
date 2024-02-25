@@ -9,7 +9,7 @@ namespace BadCode
     {
         private  VideoCapture _badVideo;
         private int _badVideoFrameCount;
-        private float _baDVideoFPS;
+        private float _badVideoFPS;
         private int _badVideoWidth;
         private int _badVideoHeight;
         private int _badVideoLength;
@@ -29,10 +29,10 @@ namespace BadCode
 
             _badVideo = vid;
             _badVideoFrameCount = (int)vid.Get(VideoCaptureProperties.FrameCount);
-            _baDVideoFPS = (int)vid.Get(VideoCaptureProperties.Fps);
+            _badVideoFPS = (int)vid.Get(VideoCaptureProperties.Fps);
             _badVideoWidth = (int)vid.Get(VideoCaptureProperties.FrameWidth);
             _badVideoHeight = (int)vid.Get(VideoCaptureProperties.FrameHeight);
-            _badVideoLength = (int)(_badVideoFrameCount / _baDVideoFPS);
+            _badVideoLength = (int)(_badVideoFrameCount / _badVideoFPS);
 
         }
 
@@ -60,16 +60,45 @@ namespace BadCode
         {
             Mat[] mat = GetBadVideoMats();
 
+            float originalFrameTime = 1000 / _badVideoFPS;
+
+
             BadAppleFrame[] badAppleFrames =
                 new BadAppleFrame[GetBadFrameCount(frameTime)];
 
             for (int i = 0; i < badAppleFrames.Length; i++)
             {
-                badAppleFrames[i] = ConvertRawFrame(mat[i]);
+
+                int nearestOriginalFrame = GetNearestFrame(i, frameTime, 1000 / _badVideoFPS);
+                badAppleFrames[i] = ConvertRawFrame(mat[nearestOriginalFrame]);
             }
 
             return badAppleFrames;
         }
+
+        private int GetNearestFrame(int index, float badTiming, float originalTiming)
+        {
+            if (index == 0)
+            {
+                return 0;
+            }
+
+            int target = (int)MathF.Round(index * badTiming);
+
+            float smallerDiff = float.MaxValue;
+
+            int i = 0;
+
+            while (MathF.Abs(smallerDiff) >= MathF.Abs((i * originalTiming) - target))
+            {
+                smallerDiff = (i * originalTiming) - target;
+                i++;
+            }
+
+            return i - 1;
+
+        }
+
 
         private BadAppleFrame ConvertRawFrame(Mat frame)
         {
@@ -144,7 +173,7 @@ namespace BadCode
 
         public float GetFPS()
         {
-            return _baDVideoFPS;
+            return _badVideoFPS;
         }
 
     }
