@@ -45,12 +45,12 @@ namespace BadCode
         {
             string s = string.Empty;
 
-            for (int i = 0; i < BadAppleFrame.WIDTH; i++)
+            for (int j = 0; j < BadAppleFrame.HEIGHT; j++)
             {
 
-                for (int j = 0; j < BadAppleFrame.HEIGHT; j++)
+                for (int i = 0; i < BadAppleFrame.WIDTH; i++)
                 {
-                    if (frame.GetFrame()[j,i] == (byte)255)
+                    if (frame.GetFrame()[i,j] == (byte)255)
                     {
                         s += "O";
                     }
