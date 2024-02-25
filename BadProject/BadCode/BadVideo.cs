@@ -114,9 +114,9 @@ namespace BadCode
 
             short[,] badFrame = new short[badFrameWidth, badFrameHeight];
 
-            int totalPixelPerBadFrameWidth = (int)(_badVideoWidth / badFrameWidth);
-            int totalPixelPerBadFrameHeight = (int)(_badVideoHeight / badFrameHeight);
-            int totalPixelPerBadFrame = totalPixelPerBadFrameWidth +
+            float totalPixelPerBadFrameWidth = (float)_badVideoWidth / badFrameWidth;
+            float totalPixelPerBadFrameHeight = (float)_badVideoHeight / badFrameHeight;
+            float totalPixelPerBadFrame = totalPixelPerBadFrameWidth +
                 totalPixelPerBadFrameHeight;
 
             for (int i = 0; i < badFrameWidth; i++)
@@ -133,15 +133,15 @@ namespace BadCode
             return new BadAppleFrame(badFrame);
         }
 
-        private byte ConvertToBadPixel(int[] pixelAddress, Mat frame, int width,
-                int height)
+        private byte ConvertToBadPixel(int[] pixelAddress, Mat frame, float width,
+                float height)
         {
-            int pixelColumnStart = pixelAddress[0] * width;
-            int pixelColumnEnd = pixelColumnStart + width;
-            int pixelRowStart = pixelAddress[1] * height;
-            int pixelRowEnd = pixelRowStart + height - 1;
+            int pixelColumnStart = (int)(MathF.Round(pixelAddress[0] * width));
+            int pixelColumnEnd = (int)(MathF.Round(pixelColumnStart + width));
+            int pixelRowStart = (int)(MathF.Round(pixelAddress[1] * height));
+            int pixelRowEnd = (int)(pixelRowStart + height);
 
-            int originalPixelPerBadFrame = width * height;
+            int originalPixelPerBadFrame = (int)(width * height);
             int whitePixelCounter = 0;
 
             for (int i = pixelRowStart; i < pixelRowEnd ; i++)
